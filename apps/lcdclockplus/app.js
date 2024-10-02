@@ -10,8 +10,19 @@ let drawTimeout;
 require("Font7x11Numeric7Seg").add(Graphics);
 const is12Hour = (require("Storage").readJSON("setting.json", 1) || {})["12hour"];
 
-// Actually draw the watch face
+// Draw function to handle whole redraw at once
 let draw = function() {
+  drawClock();
+  Bangle.drawWidgets();
+  clockInfoMenu.redraw();
+  clockInfoMenu2.redraw();
+  clockInfoMenu3.redraw();
+  clockInfoMenu4.redraw();
+
+}
+
+// Actually draw the watch face
+let drawClock = function() {
   var x = R.x + R.w/2;
   var y = R.y + 48;
   g.reset().setColor(g.theme.bg).setBgColor(g.theme.fg);
@@ -38,7 +49,7 @@ let draw = function() {
   if (drawTimeout) clearTimeout(drawTimeout);
   drawTimeout = setTimeout(function() {
     drawTimeout = undefined;
-    draw();
+    drawClock();
   }, 60000 - (Date.now() % 60000));
 };
 
@@ -97,12 +108,12 @@ g.fillRect({x:R.x, y:R.y, w:R.w, h:R.h, r:8})
   .clearRect(midX,R.y,midX,bar1Y)
   .clearRect(R.x,bar2Y,R.w,bar2Y+1)
   .clearRect(midX,bar2Y,midX,R.y2+1);
-draw();
-Bangle.drawWidgets();
-// Allocate and draw clockinfos
-let clockInfoItems = require("clock_info").load();
-let clockInfoMenu = require("clock_info").addInteractive(clockInfoItems, { app:"lcdclock", x:R.x, y:R.y, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
-let clockInfoMenu2 = require("clock_info").addInteractive(clockInfoItems, {  app:"lcdclock", x:midX+1, y:R.y, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
-let clockInfoMenu3 = require("clock_info").addInteractive(clockInfoItems, {  app:"lcdclock", x:R.x, y:bar2Y+2, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
-let clockInfoMenu4 = require("clock_info").addInteractive(clockInfoItems, {  app:"lcdclock", x:midX+1, y:bar2Y+2, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
+  Bangle.drawWidgets();
+  // Allocate and draw clockinfos
+  let clockInfoItems = require("clock_info").load();
+  let clockInfoMenu = require("clock_info").addInteractive(clockInfoItems, { app:"lcdclock", x:R.x, y:R.y, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
+  let clockInfoMenu2 = require("clock_info").addInteractive(clockInfoItems, {  app:"lcdclock", x:midX+1, y:R.y, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
+  let clockInfoMenu3 = require("clock_info").addInteractive(clockInfoItems, {  app:"lcdclock", x:R.x, y:bar2Y+2, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
+  let clockInfoMenu4 = require("clock_info").addInteractive(clockInfoItems, {  app:"lcdclock", x:midX+1, y:bar2Y+2, w:midX-2, h:bar1Y-R.y-2, draw : clockInfoDraw});
+  draw();
 }
